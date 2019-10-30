@@ -1,12 +1,16 @@
 use std::collections::HashSet;
 
-pub struct Matrix<T> {
+mod matrix;
+
+pub struct Matrix {
     rows: usize,
     cols: usize,
     data: Vec<u32>,
 }
 
-const seed_matrix: Matrix = struct Matrix { rows: 1, cols: 3, data: vec![3,4,5] }
+//
+// const seed_matrix: Matrix = struct Matrix { rows: 1, cols: 3, data:
+// vec![3,4,5] }
 
 pub fn find(sum: u32) -> HashSet<[u32; 3]> {
     let mut a: u32;

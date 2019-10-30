@@ -16,27 +16,20 @@ fn process_tripletswithsum_case(sum: u32, expected: &[[u32; 3]]) {
 }
 
 #[test]
-fn test_triplets_whose_sum_is_12() {
-    process_tripletswithsum_case(12, &[[3, 4, 5]]);
-}
+#[ignore]
+fn test_triplets_whose_sum_is_12() { process_tripletswithsum_case(12, &[[3, 4, 5]]); }
 
 #[test]
 #[ignore]
-fn test_triplets_whose_sum_is_108() {
-    process_tripletswithsum_case(108, &[[27, 36, 45]]);
-}
+fn test_triplets_whose_sum_is_108() { process_tripletswithsum_case(108, &[[27, 36, 45]]); }
 
 #[test]
 #[ignore]
-fn test_triplets_whose_sum_is_1000() {
-    process_tripletswithsum_case(1000, &[[200, 375, 425]]);
-}
+fn test_triplets_whose_sum_is_1000() { process_tripletswithsum_case(1000, &[[200, 375, 425]]); }
 
 #[test]
 #[ignore]
-fn test_no_matching_triplets_for_1001() {
-    process_tripletswithsum_case(1001, &[]);
-}
+fn test_no_matching_triplets_for_1001() { process_tripletswithsum_case(1001, &[]); }
 
 #[test]
 #[ignore]
