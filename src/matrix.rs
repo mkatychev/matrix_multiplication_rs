@@ -35,31 +35,31 @@ impl Mul for Matrix {
     // B = | 3-2 |
     //     |-2 2 |
 
-    fn mul(self, other: Self) -> Self {
+    fn mul(self, b_matrix: Self) -> Self {
+        let a_matrix = self;
         // "Number of columns in the first matrix should equal to the number of rows in
         // the second matrix",
-        if self.cols != other.rows {
+        if a_matrix.cols != b_matrix.rows {
             return Matrix {
                 rows: 0,
                 cols: 0,
                 data: vec![],
             }
         }
-        let new_row = self.rows;
-        let new_col = other.cols;
-        let cell_iter = self.rows * other.cols;
+        let new_row = a_matrix.rows;
+        let new_col = b_matrix.cols;
+        let cell_iter = a_matrix.rows * b_matrix.cols;
         let mut new_data = Vec::with_capacity(cell_iter);
         for i in 0..cell_iter {
             let mut cell_val = 0;
-            let a_start = self.cols * (i / other.cols);
-            let a_stop = a_start + self.cols;
-            let b_start = i % other.cols;
-            let b_stop = b_start + other.rows;
-            for (a, b) in (a_start..a_stop).zip(b_start..b_stop) {
-                let step_by = other.cols * (a % other.rows);
-                let b_index = b_start + step_by;
+            let a_start = a_matrix.cols * (i / b_matrix.cols);
+            let a_stop = a_start + a_matrix.cols;
+            let b_start = i % b_matrix.cols;
+            for a in a_start..a_stop {
+                let step_by = b_matrix.cols * (a % b_matrix.rows);
+                let b = b_start + step_by;
                 // iprintln!("b_start:{b_start}, b_stop:{b_stop}, step_by:{step_by}");
-                cell_val += (self.data[a] * other.data[b_index]) as u32;
+                cell_val += (a_matrix.data[a] * b_matrix.data[b]) as u32;
             }
             new_data.push(cell_val);
         }
@@ -161,10 +161,9 @@ mod tests {
             Matrix {
                 rows: 4,
                 cols: 4,
-                data: [
+                data: vec![
                     210, 267, 236, 271, 93, 149, 104, 149, 171, 146, 172, 268, 105, 169, 128, 169
-                ]
-                .to_vec(),
+                ],
             }
         );
     }
