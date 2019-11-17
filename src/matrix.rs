@@ -1,8 +1,6 @@
-extern crate ifmt;
-use self::ifmt::iprintln;
 use std::ops::Mul;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Matrix {
     rows: usize,
     cols: usize,
@@ -28,6 +26,7 @@ pub struct Matrix {
 impl Mul for Matrix {
     type Output = Self;
 
+    // Examples of valid matrix multiplication:
     //     | 0 3 5 |
     // A = | 5 5 2 |
 
@@ -35,16 +34,13 @@ impl Mul for Matrix {
     // B = | 3-2 |
     //     |-2 2 |
 
-    fn mul(self, b_matrix: Self) -> Self {
+    fn mul(self, b_matrix: Self) -> Matrix {
         let a_matrix = self;
-        // "Number of columns in the first matrix should equal to the number of rows in
-        // the second matrix",
         if a_matrix.cols != b_matrix.rows {
-            return Matrix {
-                rows: 0,
-                cols: 0,
-                data: vec![],
-            }
+            panic!(
+                "Number of columns in the first matrix should equal to the number of rows in the \
+                 second matrix!"
+            )
         }
         let new_row = a_matrix.rows;
         let new_col = b_matrix.cols;
@@ -58,7 +54,6 @@ impl Mul for Matrix {
             for a in a_start..a_stop {
                 let step_by = b_matrix.cols * (a % b_matrix.rows);
                 let b = b_start + step_by;
-                // iprintln!("b_start:{b_start}, b_stop:{b_stop}, step_by:{step_by}");
                 cell_val += (a_matrix.data[a] * b_matrix.data[b]) as u32;
             }
             new_data.push(cell_val);
@@ -72,11 +67,12 @@ impl Mul for Matrix {
     }
 }
 
-impl PartialEq for Matrix {
-    fn eq(&self, other: &Self) -> bool {
-        self.rows == other.rows && self.cols == other.cols && self.data == other.data
-    }
+impl<'a, 'b> Mul<&'b Matrix> for &'a Matrix {
+    type Output = Matrix;
+
+    fn mul(self, other: &'b Matrix) -> Matrix { self.clone() * other.clone() }
 }
+
 impl Matrix {
     pub fn new(rows: usize, cols: usize, data: Vec<u32>) -> Result<Self, &'static str> {
         let data_len = data.len();
@@ -109,7 +105,7 @@ mod tests {
         );
     }
     #[test]
-    fn mul_matrix() {
+    fn ii_x_ii_matrix() {
         let a = Matrix::new(2, 3, (0..6).collect()).unwrap();
         let b = Matrix::new(3, 2, (0..6).collect()).unwrap();
         assert_eq!(
@@ -122,9 +118,17 @@ mod tests {
         );
     }
     #[test]
-    fn ii_iii_matrix() {
+    fn ii_x_iii_matrix() {
         let a = Matrix::new(3, 2, vec![2, 4, 6, 4, 7, 3]).unwrap();
         let b = Matrix::new(2, 2, vec![2, 1, 8, 5]).unwrap();
+        assert_eq!(
+            &a * &b,
+            Matrix {
+                rows: 3,
+                cols: 2,
+                data: [36, 22, 44, 26, 38, 22].to_vec(),
+            }
+        );
         assert_eq!(
             a * b,
             Matrix {
@@ -135,7 +139,7 @@ mod tests {
         );
     }
     #[test]
-    fn iii_iv_matrix() {
+    fn iii_x_iv_matrix() {
         let a = Matrix::new(3, 2, vec![1, 3, 2, 4, 2, 5]).unwrap();
         let b = Matrix::new(2, 4, vec![1, 3, 2, 2, 2, 4, 5, 1]).unwrap();
         assert_eq!(
@@ -148,7 +152,7 @@ mod tests {
         );
     }
     #[test]
-    fn iv_iv_matrix() {
+    fn iv_xx_iv_matrix() {
         let a = Matrix::new(4, 4, vec![5, 7, 9, 10, 2, 3, 3, 8, 8, 10, 2, 3, 3, 3, 4, 8]).unwrap();
         let b = Matrix::new(
             4,
@@ -168,5 +172,3 @@ mod tests {
         );
     }
 }
-//     fn 3by3_x_1() {
-// }

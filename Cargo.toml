@@ -4,3 +4,4 @@ ifmt = "0.2.0"
 [package]
 name = "pythagorean_triplet"
 version = "1.0.0"
+edition = "2018"
