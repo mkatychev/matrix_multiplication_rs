@@ -50,16 +50,17 @@ impl TernaryNode {
             return set
         }
 
+        // Grow all leaves using matrix multiplication
         self.grow(matrices[0], matrices[1], matrices[2]);
 
         let mut leaves: [&mut Leaf; 3] = [&mut self.left, &mut self.middle, &mut self.right];
 
+        // traverse every leaf synchronously
         for leaf in leaves.iter_mut() {
             let leaf_matches = leaf.as_mut().unwrap().cond_grow(matrices, matcher);
             set.extend(leaf_matches);
         }
         set
-        // if set.is_empty() { None } else { Some(set) }
     }
 }
 
