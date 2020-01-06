@@ -1,42 +1,47 @@
 use std::ops::Mul;
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct Matrix {
-    rows: usize,
-    cols: usize,
-    data: Vec<u32>,
-}
+// https://en.wikipedia.org/wiki/Tree_of_primitive_Pythagorean_triples
+//     | 1-2 2 |
+// A = | 2-1 2 |
+//     | 2-2 3 |
+pub static BARNING_A: &[i32] = &[1, -2, 2, 2, -1, 2, 2, -2, 3];
 
 //     | 1 2 2 |
-// A = | 2 1 2 |
+// B = | 2 1 2 |
 //     | 2 2 3 |
+pub static BARNING_B: &[i32] = &[1, 2, 2, 2, 1, 2, 2, 2, 3];
 
 //     |-1 2 2 |
-// B = |-2 1 2 |
+// C = |-2 1 2 |
 //     |-2 2 3 |
+pub static BARNING_C: &[i32] = &[-1, 2, 2, -2, 1, 2, -2, 2, 3];
 
-//     | 1-2 2 |
-// C = | 2-1 2 |
-//     | 2-2 3 |
-// a^2 + b^2 = c^2
-// a/k = m^2 - n^2
-// b/k = 2mn
-// c/k = m^2 - n^2
+#[derive(Debug, Clone, PartialEq)]
+pub struct Matrix {
+    pub rows: usize,
+    pub cols: usize,
+    pub data: Vec<i32>,
+}
+impl Matrix {
+    pub fn new(rows: usize, cols: usize, data: Vec<i32>) -> Result<Self, &'static str> {
+        let data_len = data.len();
+        let matrix = Self { rows, cols, data };
+        if (matrix.rows * matrix.cols) != data_len {
+            return Err("No good long stuff")
+        }
+        Ok(matrix)
+    }
+}
 
 impl Mul for Matrix {
     type Output = Self;
 
-    // Examples of valid matrix multiplication:
-    //     | 0 3 5 |
-    // A = | 5 5 2 |
-
-    //     | 3 4 |
-    // B = | 3-2 |
-    //     |-2 2 |
-
+    #[allow(clippy::suspicious_arithmetic_impl)]
     fn mul(self, b_matrix: Self) -> Matrix {
         let a_matrix = self;
         if a_matrix.cols != b_matrix.rows {
+            dbg!(a_matrix);
+            dbg!(b_matrix);
             panic!(
                 "Number of columns in the first matrix should equal to the number of rows in the \
                  second matrix!"
@@ -54,7 +59,7 @@ impl Mul for Matrix {
             for a in a_start..a_stop {
                 let step_by = b_matrix.cols * (a % b_matrix.rows);
                 let b = b_start + step_by;
-                cell_val += (a_matrix.data[a] * b_matrix.data[b]) as u32;
+                cell_val += (a_matrix.data[a] * b_matrix.data[b]) as i32;
             }
             new_data.push(cell_val);
         }
@@ -67,25 +72,11 @@ impl Mul for Matrix {
     }
 }
 
+// Multiplying two referenced Matrices should return an unreferenced matrix
 impl<'a, 'b> Mul<&'b Matrix> for &'a Matrix {
     type Output = Matrix;
 
     fn mul(self, other: &'b Matrix) -> Matrix { self.clone() * other.clone() }
-}
-
-impl Matrix {
-    pub fn new(rows: usize, cols: usize, data: Vec<u32>) -> Result<Self, &'static str> {
-        let data_len = data.len();
-        let matrix = Self {
-            rows: rows,
-            cols: cols,
-            data: data,
-        };
-        if (matrix.rows * matrix.cols) != data_len {
-            return Err("No good long stuff")
-        }
-        Ok(matrix)
-    }
 }
 
 #[cfg(test)]
